@@ -82,21 +82,24 @@ def get_recipes():
 def get_recipe(id):
     recipe = Recipe.query.get(id)
     if not recipe:
-        return jsonify({"message": "Recipe not found!"}), 200
+        return jsonify({"message": "Recipe not found!"}), 200  # Already correct
 
     return jsonify({
         "message": "Recipe details by id",
-        "recipe": {  # <-- Wrap recipe inside a "recipe" key
-            "id": recipe.id,
-            "title": recipe.title,
-            "making_time": recipe.making_time,
-            "serves": recipe.serves,
-            "ingredients": recipe.ingredients,
-            "cost": recipe.cost,
-            "created_at": recipe.created_at,
-            "updated_at": recipe.updated_at
-        }
+        "recipe": [  # <-- Fix: Put recipe inside an array
+            {
+                "id": recipe.id,
+                "title": recipe.title,
+                "making_time": recipe.making_time,
+                "serves": recipe.serves,
+                "ingredients": recipe.ingredients,
+                "cost": recipe.cost,
+                "created_at": recipe.created_at,
+                "updated_at": recipe.updated_at
+            }
+        ]
     }), 200
+
 
 
 # PATCH /recipes/{id} - Update a recipe
