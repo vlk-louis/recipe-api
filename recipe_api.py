@@ -45,17 +45,20 @@ def create_recipe():
     
     return jsonify({
         "message": "Recipe successfully created!",
-        "recipe": {
-            "id": new_recipe.id,
-            "title": new_recipe.title,
-            "making_time": new_recipe.making_time,
-            "serves": new_recipe.serves,
-            "ingredients": new_recipe.ingredients,
-            "cost": new_recipe.cost,
-            "created_at": new_recipe.created_at,
-            "updated_at": new_recipe.updated_at
-        }
+        "recipe": [  # <-- Fix: Put recipe inside an array
+            {
+                "id": new_recipe.id,
+                "title": new_recipe.title,
+                "making_time": new_recipe.making_time,
+                "serves": new_recipe.serves,
+                "ingredients": new_recipe.ingredients,
+                "cost": new_recipe.cost,
+                "created_at": new_recipe.created_at,
+                "updated_at": new_recipe.updated_at
+            }
+        ]
     }), 200
+
 
 # GET /recipes - Get all recipes
 @app.route('/recipes', methods=['GET'])
@@ -80,17 +83,21 @@ def get_recipe(id):
     recipe = Recipe.query.get(id)
     if not recipe:
         return jsonify({"message": "Recipe not found!"}), 200
-    
+
     return jsonify({
-        "id": recipe.id,
-        "title": recipe.title,
-        "making_time": recipe.making_time,
-        "serves": recipe.serves,
-        "ingredients": recipe.ingredients,
-        "cost": recipe.cost,
-        "created_at": recipe.created_at,
-        "updated_at": recipe.updated_at
+        "message": "Recipe details by id",
+        "recipe": {  # <-- Wrap recipe inside a "recipe" key
+            "id": recipe.id,
+            "title": recipe.title,
+            "making_time": recipe.making_time,
+            "serves": recipe.serves,
+            "ingredients": recipe.ingredients,
+            "cost": recipe.cost,
+            "created_at": recipe.created_at,
+            "updated_at": recipe.updated_at
+        }
     }), 200
+
 
 # PATCH /recipes/{id} - Update a recipe
 @app.route('/recipes/<int:id>', methods=['PATCH'])
