@@ -10,9 +10,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Database Model
 class Recipe(db.Model):
-    __tablename__ = 'recipes'  # <-- Explicitly set the table name to match your MySQL database
+    __tablename__ = 'recipes'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False)
@@ -24,7 +23,6 @@ class Recipe(db.Model):
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
 
-# POST /recipes - Create a Recipe
 @app.route('/recipes', methods=['POST'])
 def create_recipe():
     data = request.get_json()
@@ -45,7 +43,7 @@ def create_recipe():
     
     return jsonify({
         "message": "Recipe successfully created!",
-        "recipe": [  # <-- Fix: Put recipe inside an array
+        "recipe": [ 
             {
                 "id": new_recipe.id,
                 "title": new_recipe.title,
@@ -60,7 +58,6 @@ def create_recipe():
     }), 200
 
 
-# GET /recipes - Get all recipes
 @app.route('/recipes', methods=['GET'])
 def get_recipes():
     recipes = Recipe.query.all()
@@ -77,16 +74,15 @@ def get_recipes():
     
     return jsonify({"recipes": result}), 200
 
-# GET /recipes/{id} - Get a single recipe
 @app.route('/recipes/<int:id>', methods=['GET'])
 def get_recipe(id):
     recipe = Recipe.query.get(id)
     if not recipe:
-        return jsonify({"message": "Recipe not found!"}), 200  # Already correct
+        return jsonify({"message": "Recipe details by id"}), 200
 
     return jsonify({
         "message": "Recipe details by id",
-        "recipe": [  # <-- Fix: Put recipe inside an array
+        "recipe": [
             {
                 "id": recipe.id,
                 "title": recipe.title,
@@ -101,8 +97,6 @@ def get_recipe(id):
     }), 200
 
 
-
-# PATCH /recipes/{id} - Update a recipe
 @app.route('/recipes/<int:id>', methods=['PATCH'])
 def update_recipe(id):
     recipe = Recipe.query.get(id)
@@ -128,19 +122,18 @@ def update_recipe(id):
         }
     }), 200
 
-# DELETE /recipes/{id} - Delete a recipe
 @app.route('/recipes/<int:id>', methods=['DELETE'])
 def delete_recipe(id):
     recipe = Recipe.query.get(id)
     if not recipe:
-        return jsonify({"message": "recipe not found!"}), 404
+        return jsonify({"message": "recipe not found!"}), 200
     
     db.session.delete(recipe)
     db.session.commit()
     
     return jsonify({"message": "recipe successfully deleted!"}), 200
 
-# Error handling for 404
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({"message": "not found!"}), 404
