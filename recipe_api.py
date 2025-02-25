@@ -12,6 +12,8 @@ db = SQLAlchemy(app)
 
 # Database Model
 class Recipe(db.Model):
+    __tablename__ = 'recipes'  # <-- Explicitly set the table name to match your MySQL database
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False)
     making_time = db.Column(db.String(100), nullable=False)
@@ -20,6 +22,7 @@ class Recipe(db.Model):
     cost = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+
 
 # POST /recipes - Create a Recipe
 @app.route('/recipes', methods=['POST'])
