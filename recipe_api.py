@@ -28,11 +28,17 @@ class Recipe(db.Model):
 @app.route('/recipes', methods=['POST'])
 def create_recipe():
     data = request.get_json()
+
     required_fields = ['title', 'making_time', 'serves', 'ingredients', 'cost']
-    
-    if not all(field in data for field in required_fields):
-        return jsonify({"message": "recipe creation failed!", "required": required_fields}), 404
-    
+
+    # Check if all required fields are present
+    if not data or not all(field in data for field in required_fields):
+        return jsonify({
+            "message": "recipe creation failed!",
+            "required": required_fields
+        }), 400  # <-- Change 404 to 400 (Bad Request)
+
+    # Create a new recipe
     new_recipe = Recipe(
         title=data['title'],
         making_time=data['making_time'],
@@ -42,7 +48,7 @@ def create_recipe():
     )
     db.session.add(new_recipe)
     db.session.commit()
-    
+
     return jsonify({
         "message": "recipe successfully created!",
         "recipe": {
@@ -56,6 +62,7 @@ def create_recipe():
             "updated_at": new_recipe.updated_at
         }
     }), 200
+
 
 # GET /recipes - Get all recipes
 @app.route('/recipes', methods=['GET'])
