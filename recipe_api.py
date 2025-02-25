@@ -28,17 +28,11 @@ class Recipe(db.Model):
 @app.route('/recipes', methods=['POST'])
 def create_recipe():
     data = request.get_json()
-
     required_fields = ['title', 'making_time', 'serves', 'ingredients', 'cost']
-
-    # Check if all required fields are present
-    if not data or not all(field in data for field in required_fields):
-        return jsonify({
-            "message": "recipe creation failed!",
-            "required": required_fields
-        }), 400  # <-- Change 404 to 400 (Bad Request)
-
-    # Create a new recipe
+    
+    if not all(field in data for field in required_fields):
+        return jsonify({"message": "Recipe creation failed!", "required": required_fields}), 200
+    
     new_recipe = Recipe(
         title=data['title'],
         making_time=data['making_time'],
@@ -48,9 +42,9 @@ def create_recipe():
     )
     db.session.add(new_recipe)
     db.session.commit()
-
+    
     return jsonify({
-        "message": "recipe successfully created!",
+        "message": "Recipe successfully created!",
         "recipe": {
             "id": new_recipe.id,
             "title": new_recipe.title,
@@ -62,7 +56,6 @@ def create_recipe():
             "updated_at": new_recipe.updated_at
         }
     }), 200
-
 
 # GET /recipes - Get all recipes
 @app.route('/recipes', methods=['GET'])
@@ -86,7 +79,7 @@ def get_recipes():
 def get_recipe(id):
     recipe = Recipe.query.get(id)
     if not recipe:
-        return jsonify({"message": "recipe not found!"}), 404
+        return jsonify({"message": "Recipe not found!"}), 200
     
     return jsonify({
         "id": recipe.id,
@@ -104,7 +97,7 @@ def get_recipe(id):
 def update_recipe(id):
     recipe = Recipe.query.get(id)
     if not recipe:
-        return jsonify({"message": "recipe not found!"}), 404
+        return jsonify({"message": "Recipe not found!"}), 200
     
     data = request.get_json()
     for key, value in data.items():
